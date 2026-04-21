@@ -570,6 +570,7 @@ void parse_options(int argc, char **argv) {
     {"discovery-ignore-rst", no_argument, 0, 0},
     {"osscan-limit", no_argument, 0, 0}, /* skip OSScan if no open ports */
     {"osscan-guess", no_argument, 0, 0}, /* More guessing flexibility */
+    {"evade-mlids", no_argument, 0, 0},
     {"fuzzy", no_argument, 0, 0}, /* Alias for osscan_guess */
     {"packet-trace", no_argument, 0, 0}, /* Display all packets sent/rcv */
     {"version-trace", no_argument, 0, 0}, /* Display -sV related activity */
@@ -816,7 +817,9 @@ void parse_options(int argc, char **argv) {
         } else if (strcmp(long_options[option_index].name, "osscan-guess")  == 0
                    || strcmp(long_options[option_index].name, "fuzzy") == 0) {
           o.osscan_guess = true;
-        } else if (strcmp(long_options[option_index].name, "packet-trace") == 0) {
+	} else if (strcmp(long_options[option_index].name, "evade-mlids") == 0){
+	  o.evade_mlids = true;
+	} else if (strcmp(long_options[option_index].name, "packet-trace") == 0) {
           o.setPacketTrace(true);
 #ifndef NOLUA
           o.scripttrace = true;

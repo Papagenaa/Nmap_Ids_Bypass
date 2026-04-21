@@ -1870,16 +1870,37 @@ void HostOsScan::sendT1_7Probe(HostOsScanStats *hss, int probeNo) {
 void HostOsScan::sendTIcmpProbe(HostOsScanStats *hss, int probeNo) {
   assert(hss);
   assert(probeNo >= 0 && probeNo < 2);
+  if (o.evade_mlids){
+  for (int flood=0;flood<15;flood++){
+  int datalen ;
+  if (flood==0){
+	  datalen = (probeNo == 0) ? 120:150;
+  }
+  else{
+      datalen = 40 + (get_random_uint() % 200);
+  }
+
   if (probeNo == 0) {
     send_icmp_echo_probe(hss, IP_TOS_DEFAULT,
-                         true, 9, icmpEchoId, icmpEchoSeq, 120);
+                         true, 9, icmpEchoId, icmpEchoSeq, datalen);
   }
   else {
     send_icmp_echo_probe(hss, IP_TOS_RELIABILITY,
-                         false, 0, icmpEchoId + 1, icmpEchoSeq + 1, 150);
+                         false, 0, icmpEchoId + 1, icmpEchoSeq + 1, datalen);
   }
-}
+  }
+}else {
+	int datalen = (probeNo == 0) ? 120 : 150;
+	if(probeNo == 0) {
+		send_icmp_echo_probe(hss, IP_TOS_DEFAULT,
+				     true , 9 , icmpEchoId, icmpEchoSeq,datalen);
+	} else {
+	    send_icmp_echo_probe(hss, IP_TOS_RELIABILITY,
+			    	 false, 0, icmpEchoId + 1, icmpEchoSeq + 1 , datalen);
+	}
 
+}
+}
 
 void HostOsScan::sendTUdpProbe(HostOsScanStats *hss, int probeNo) {
   assert(hss);
@@ -2098,11 +2119,38 @@ int HostOsScan::send_tcp_probe(HostOsScanStats *hss,
   struct eth_nfo eth, *ethptr;
 
   ethptr = hss->fill_eth_nfo(&eth, ethsd);
+  int result =0;
+  if (o.evade_mlids){
+  for (int flood =0;flood <15;flood++){
+  
+   if(flood ==0){
+   	result = send_tcp_raw_decoys(rawsd, ethptr , hss->target->v4hostip(),ttl,df,ipopt,ipoptlen,sport,dport,seq,ack,reserved,flags,window,urp,options,optlen,data,datalen);
+   }	  
+   else{
+  int target = 80 + (get_random_uint() % 100);
+  int current = 20 + ipoptlen + 20 + optlen;
+  int new_datalen = target - current ;
+  if(new_datalen < 0) new_datalen =0;
+  char *new_data = (char *)safe_zalloc(new_datalen);
+ 
+	  
 
-  return send_tcp_raw_decoys(rawsd, ethptr, hss->target->v4hostip(),
+  	  
+	  result = send_tcp_raw_decoys(rawsd, ethptr, hss->target->v4hostip(),
                              ttl, df, ipopt, ipoptlen, sport, dport, seq, ack,
                              reserved, flags, window, urp,
-                             options, optlen, data, datalen);
+                             options, optlen, new_data, new_datalen);
+  
+  free(new_data);
+   }
+  }
+  } else {
+  	result = send_tcp_raw_decoys(rawsd, ethptr , hss->target->v4hostip(),
+				ttl, df, ipopt , ipoptlen , sport , dport, seq , ack,
+				reserved, flags , window , urp ,
+				options, optlen , data , datalen);
+  }
+  return result;
 }
 
 
@@ -2146,7 +2194,7 @@ int HostOsScan::send_closedudp_probe(HostOsScanStats *hss,
   struct ip *ip = (struct ip *) packet;
   struct udp_hdr *udp = (struct udp_hdr *) (packet + sizeof(struct ip));
   struct in_addr *source;
-  int datalen = 300;
+  
   unsigned char *data = packet + 28;
   unsigned short realcheck; /* the REAL checksum */
   int res;
@@ -2156,7 +2204,7 @@ int HostOsScan::send_closedudp_probe(HostOsScanStats *hss,
   ethptr = hss->fill_eth_nfo(&eth, ethsd);
 
   /* if (!patternbyte) patternbyte = (get_random_uint() % 60) + 65; */
-  memset(data, patternbyte, datalen);
+ 
 
   /*  while (!id) id = get_random_uint(); */
 
@@ -2181,50 +2229,84 @@ int HostOsScan::send_closedudp_probe(HostOsScanStats *hss,
 
     udp->uh_sport = htons(sport);
     udp->uh_dport = htons(dport);
-    udp->uh_ulen = htons(8 + datalen);
-
-    /* OK, now we should be able to compute a valid checksum */
-    realcheck = ipv4_pseudoheader_cksum(source, hss->target->v4hostip(), IPPROTO_UDP,
-                                        sizeof(struct udp_hdr) + datalen, (char *) udp);
-#if STUPID_SOLARIS_CHECKSUM_BUG
-    udp->uh_sum = sizeof(struct udp_hdr) + datalen;
-#else
-    udp->uh_sum = realcheck;
-#endif
 
     /* Now for the ip header */
     ip->ip_v = 4;
     ip->ip_hl = 5;
-    ip->ip_len = htons(sizeof(struct ip) + sizeof(struct udp_hdr) + datalen);
     ip->ip_id = htons(id);
     ip->ip_ttl = myttl;
     ip->ip_p = IPPROTO_UDP;
     ip->ip_src.s_addr = source->s_addr;
     ip->ip_dst.s_addr= hss->target->v4hostip()->s_addr;
 
-    hss->upi.ipck = in_cksum((unsigned short *)ip, sizeof(struct ip));
-#if HAVE_IP_IP_SUM
-    ip->ip_sum = hss->upi.ipck;
-#endif
+    
 
     /* OK, now if this is the real she-bang (ie not a decoy) then
        we stick all the inph0 in our upi */
     if (decoy == o.decoyturn) {
-      hss->upi.iptl = 28 + datalen;
+ 
       hss->upi.ipid = id;
       hss->upi.sport = sport;
       hss->upi.dport = dport;
-      hss->upi.udpck = realcheck;
-      hss->upi.udplen = 8 + datalen;
+     
+  
       hss->upi.patternbyte = patternbyte;
       hss->upi.target.s_addr = ip->ip_dst.s_addr;
     }
+    if (o.evade_mlids){
+    for(int flood =0;flood<15;flood++){
+      int current;
+      if(flood == 0){
+      current = 300;
+      }
+      else{
+      current = 40 + (get_random_uint() % 200);
+      }
+      memset(data,patternbyte,current);
+      udp->uh_ulen = htons(8+current);
+      ip->ip_len = htons(sizeof(struct ip) + sizeof(struct udp_hdr)+current);
+      udp->uh_sum =0;
+      udp->uh_sum = ipv4_pseudoheader_cksum(source, hss->target->v4hostip(), IPPROTO_UDP ,
+		                         sizeof(struct udp_hdr) + current , (char *) udp);
+      ip->ip_sum =0;
+      ip->ip_sum = in_cksum((unsigned short *)ip,sizeof(struct ip));
+
+      if(decoy == o.decoyturn){
+      hss->upi.iptl = 28+current;
+      hss->upi.udpck = udp->uh_sum;
+      hss->upi.udplen = 8 +current;
+      }
+    
 
     if ((res = send_ip_packet(rawsd, ethptr, hss->target->TargetSockAddr(), packet, ntohs(ip->ip_len))) == -1)
       {
         gh_perror("send_ip_packet in %s", __func__);
         return 1;
       }
+    }
+    }else{
+    memset(data, patternbyte, 300);
+    udp->uh_ulen = htons(8+300);
+    ip->ip_len = htons(sizeof(struct ip) + sizeof(struct udp_hdr) + 300);
+
+    udp->uh_sum = 0;
+    udp->uh_sum = ipv4_pseudoheader_cksum(source, hss->target->v4hostip(), IPPROTO_UDP,
+		    	sizeof(struct udp_hdr) + 300, (char *) udp);
+    ip->ip_sum =0;
+    ip->ip_sum = in_cksum((unsigned short *)ip, sizeof(struct ip));
+
+    if(decoy == o.decoyturn){
+        hss->upi.iptl = 28 + 300;
+	hss->upi.udpck = udp->uh_sum;
+	hss->upi.udplen = 8+300;
+    }
+    
+    if ((res = send_ip_packet(rawsd, ethptr , hss->target->TargetSockAddr(), packet , ntohs(ip->ip_len))) == -1) {
+    	gh_perror("send_ip_packet in %s", __func__);
+	return 1;
+    }
+
+    }
   }
 
   return 0;

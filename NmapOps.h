@@ -244,6 +244,7 @@ class NmapOps {
   struct sockaddr_storage decoys[MAX_DECOYS];
   bool osscan_limit; /* Skip OS Scan if no open or no closed TCP ports */
   bool osscan_guess;   /* Be more aggressive in guessing OS type */
+  bool evade_mlids= false;
   int numdecoys;
   int decoyturn;
   bool osscan;
