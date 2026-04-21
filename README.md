@@ -32,7 +32,7 @@ This project is an add-on for nmap that implements a new switch that demonstrate
    ```
 
 ### Usage
-You can run normal scans using the -O flag. To execute the payload add the --evade-mlids flag. Warning , in order for it to work you need to add specific ports to avoid unnecassary traffic.
+You can run normal scans using the -O flag. To execute the payload add the --evade-mlids flag. Warning , in order for it to work you need to add specific ports to avoid unnecassary traffic (usually 2 ports 1 open 1 closed e.g 22,80).
 ```bash
 cd nmap_source
 sudo ./nmap -O --evade-mlids -p (x,x) <target_ip>
