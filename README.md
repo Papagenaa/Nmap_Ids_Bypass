@@ -35,14 +35,16 @@ sudo nmap/nmap -O --evade-mlids -p <x,x) <target_ip>
 ## Part 2 : The IDS detection models
 
 ## Usage
-1. '''python pip install requirements.txt '''
+1. ```python
+   pip install requirements.txt
+   ```
 2. Place 'OS_Scan_dataset.csv' and 'OS_Scan_labels.csv' in the root folder.
 3. Capture your own traffic , convert it to a CSV with the pcap2csv script and place it in the root.
 4. Run your chosen model e.g
    ```python
    python ml_models/ids_neural_network.py
    ```
-6. The script will produce a CSV file with a column appended to it about the model's decision.
+5. The script will produce a CSV file with a column appended to it about the model's decision.
 
 
 # DISCLAIMER
