@@ -41,7 +41,7 @@ sudo ./nmap -O --evade-mlids -p (x,x) <target_ip>
    ```
 2. Place 'OS_Scan_dataset.csv' and 'OS_Scan_labels.csv' in the root folder.
 3. Capture your own traffic , convert it to a CSV with the pcap2csv script and place it in the root.
-4. Run your chosen model e.g
+4. Run your chosen model (you have to specify the capture file manually within the script)  e.g
    ```python
    python ml_models/ids_neural_network.py
    ```
