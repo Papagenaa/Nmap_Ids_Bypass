@@ -2,8 +2,8 @@
 This project is an add-on for nmap that implements a new switch that demonstrates adversarial feature manipulation in network traffic. It includes a custom patch for NMaps OS fingerprinting engine designed to inflate volumetric , variance and weight metrics to bypass machine learning intrusion detection systems , specifically targeting Random Forest , Neural Network and Linear architectures trained on the Kitsune OS scan dataset.
 
 ## Repository Structure
-* `feature_extractor`: The files containing the code needed to run the pcap2csv script.
-* `nmap_source`: Contains the full modified NMap source code.
+* `feature_extractor/`: The files containing the code needed to run the pcap2csv script.
+* `nmap_source/`: Contains the full modified NMap source code.
 * `ml_models/`: The scripts used for testing against different ml models.
 
 ## Part 1 : The evasion scanner
