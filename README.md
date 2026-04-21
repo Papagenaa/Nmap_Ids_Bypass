@@ -30,7 +30,7 @@ This project is an add-on for nmap that implements a new switch that demonstrate
 You can run normal scans using the -O flag. To execute the payload add the --evade-mlids flag. Warning , in order for it to work you need to add specific ports to avoid unnecassary traffic.
 ```bash
 cd nmap_source
-sudo ./nmap -O --evade-mlids -p <x,x) <target_ip>
+sudo ./nmap -O --evade-mlids -p (x,x) <target_ip>
 ```
 
 ## Part 2 : The IDS detection models
