@@ -17,11 +17,16 @@ This project is an add-on for nmap that implements a new switch that demonstrate
    ```bash
    cd Nmap_Ids_Bypass
    ```
-3. Configure the environment
+3. Execute setup script to install dependencies
+   ```bash
+   chmod +x setup.sh
+   ./setup.sh
+   ```
+4. Configure the environment
    ```bash
    ./configure
    ```
-4. Compile the source code
+5. Compile the source code
    ```bash
    make
    ```
@@ -36,16 +41,13 @@ sudo ./nmap -O --evade-mlids -p (x,x) <target_ip>
 ## Part 2 : The IDS detection models
 
 ## Usage
-1. ```python
-   pip install requirements.txt
-   ```
-2. Place 'OS_Scan_dataset.csv' and 'OS_Scan_labels.csv' in the root folder.
-3. Capture your own traffic , convert it to a CSV with the pcap2csv script and place it in the root.
-4. Run your chosen model (you have to specify the capture file manually within the script)  e.g
+1. Place 'OS_Scan_dataset.csv' and 'OS_Scan_labels.csv' in the root folder.
+2. Capture your own traffic , convert it to a CSV with the pcap2csv script and place it in the root.
+3. Run your chosen model (you have to specify the capture file manually within the script)  e.g
    ```python
    python ml_models/ids_neural_network.py
    ```
-5. The script will produce a CSV file with a column appended to it about the model's decision.
+4. The script will produce a CSV file with a column appended to it about the model's decision.
 
 
 # DISCLAIMER
