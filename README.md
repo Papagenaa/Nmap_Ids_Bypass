@@ -3,7 +3,7 @@ This project is an add-on for nmap that implements a new switch that demonstrate
 
 ## Repository Structure
 * `feature_extractor/`: The files containing the code needed to run the pcap2csv script.
-* `nmap_source/`: Contains the full modified NMap source code.
+* `nmap_source/`: Contains the full modified Nmap source code.
 * `ml_models/`: The scripts used for testing against different ml models.
 
 ## Part 1 : The evasion scanner
@@ -41,7 +41,7 @@ sudo ./nmap -O --evade-mlids -p (x,x) <target_ip>
 ## Part 2 : The IDS detection models
 
 ## Usage
-1. Place 'OS_Scan_dataset.csv' and 'OS_Scan_labels.csv' in the root folder.
+1. Place 'OS_Scan_dataset.csv' and 'OS_Scan_labels.csv' in the root folder. You can download the csv's from [here](https://www.kaggle.com/datasets/ymirsky/network-attack-dataset-kitsune/data?select=OS+Scan).
 2. Capture your own traffic , convert it to a CSV with the pcap2csv script and place it in the root.
 3. Run your chosen model (you have to specify the capture file manually within the script)  e.g
    ```python
