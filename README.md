@@ -64,7 +64,7 @@ pip install scikit-learn lime numpy pandas matplotlib scapy
 
 ### 1. Dataset
 
-Download the OS scan dataset from the [Kitsune Network Attack Dataset](https://github.com/ymirsky/KitNET-py):
+Download the OS scan dataset from the [Kitsune Network Attack Dataset](https://www.kaggle.com/datasets/ymirsky/network-attack-dataset-kitsune/data?select=OS+Scan):
 
 ```bash
 # Place the pcap and its AfterImage-extracted feature CSV in data/
