@@ -1,6 +1,6 @@
 # Evading Detection During Reconnaissance: AI Explainability as Inside Information
 
-Research implementation accompanying the paper submitted to the **Workshop on Secure and Trustworthy AI (STAI 2026)**
+Research implementation accompanying the paper submitted to the **Workshop on Secure and Trustworthy AI (STAI 2026)** (Github Page still under construction)
 
 ---
 
